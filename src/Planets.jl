@@ -9,7 +9,6 @@ struct Planet
 
     # orbital parameters
     ω::Real
-    n::Real
 
     # rheaology parameters
     η::Real

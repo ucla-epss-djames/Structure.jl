@@ -23,7 +23,7 @@ function cmu_maxwell(μ::Real, ω::Real, η::Real)
 
     ω_m = μ / η
 
-    cmu = μ / (1 + (ω_m / ω)*im)
+    cmu = μ / (1 - (ω_m/ω)*im)
 
     return cmu
 
@@ -37,16 +37,22 @@ function cmu_SLS(μ0::Real, ω::Real, η::Real, μ_f::Real)
 
     τ = η / (μ0 + μ1)
 
-    cmu = μ0 - dμ / (1 - τ*ω*im)
+    cmu = μ0 - dμ / (1 + τ*ω*im)
 
 end
 
 function cmu_andrade(μ::Real, ω::Real, η::Real, α::Real)
 
     β = μ^(α - 1) * η^-α
-    χ = 2*ω
 
-    cmu = 1 / μ - im / (η * χ) + β*(χ*im)^-α * gamma(1 + α)
+    ReJ = 1 / μ + ω^-α * β * cos(α*π/2) * gamma(α + 1)
+    ImJ = -1 / (η * ω) - ω^-α * β * sin(α*π/2) * gamma(α + 1)
+
+    # J = 1 / μ - im / (η * ω) + β*(ω*im)^-α * gamma(1 + α)
+
+    J = ReJ + ImJ*im
+
+    cmu = 1 / J
 
 end
 
@@ -55,7 +61,7 @@ end
 planet_mu(r::Real, g::Real, ρ::Real) = ρ * g * r
 
 function planet_cmu(μ::Real, ω::Real, η::Real, r::Real, g::Real,
-                    ρ::Real, μ_f::Real, α::Real, n::Real, model::Int)
+                    ρ::Real, μ_f::Real, α::Real, model::Int)
 
     if η == 0.0
         # if eta is small, produce small shear
@@ -76,7 +82,7 @@ function planet_cmu(μ::Real, ω::Real, η::Real, r::Real, g::Real,
         elseif model == 2
             cmu = cmu_SLS(μ, ω, η, μ_f)
         elseif model == 3
-            cmu = cmu_andrade(μ, ω, η, α, n)
+            cmu = cmu_andrade(μ, ω, η, α)
         end
 
     end
@@ -125,7 +131,7 @@ function planet_structure(plnt, data::Matrix)
 
         sd[i,4] = ρ
         sd[i,3] = g
-        sd[i,2] = planet_cmu(μ, ω, η, r1, g, ρ, μ_f, α, n, model)
+        sd[i,2] = planet_cmu(μ, ω, η, r1, g, ρ, μ_f, α, model)
         sd[i,1] = r1
 
     end
