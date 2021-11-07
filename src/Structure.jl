@@ -1,16 +1,15 @@
 module Structure
 
-include("Planets.jl")
-
-using .Planets
-
 using SpecialFunctions: gamma
 using PhysicalConstants.CODATA2018: G
 using QuadGK: quadgk
 
+export dmdr, dPdr
+export planet_m, planet_g, planet_mmotion, planet_mu, planet_cmu, planet_structure
+
 # Governing Equations
 dmdr(r::Real, ρ::Real) = 4π * ρ * r^2
-dPdR(r::Real, ρ::Real, m::Real) = -G.val * m * ρ / r^2
+dPdr(r::Real, ρ::Real, m::Real) = -G.val * m * ρ / r^2
 
 # Planetary Structure EQNs
 planet_m(r::Real, ρ::Real) = 4π * ρ * r^2
@@ -45,18 +44,11 @@ function cmu_andrade(μ::Real, ω::Real, η::Real, α::Real)
 
     β = μ^(α - 1) * η^-α
 
-    ReJ = 1 / μ + ω^-α * β * cos(α*π/2) * gamma(α + 1)
-    ImJ = -1 / (η * ω) - ω^-α * β * sin(α*π/2) * gamma(α + 1)
-
-    # J = 1 / μ - im / (η * ω) + β*(ω*im)^-α * gamma(1 + α)
-
-    J = ReJ + ImJ*im
+    J = 1 / μ - im / (η * ω) + β*(ω*im)^-α * gamma(1 + α)
 
     cmu = 1 / J
 
 end
-
-
 
 planet_mu(r::Real, g::Real, ρ::Real) = ρ * g * r
 
