@@ -1,0 +1,14 @@
+#+TITLE: Structure.jl
+#+AUTHOR: David James, davidabraham@ucla.edu
+
+* Description
+  This is a repository of planetary structure code to work alongside ~Tidal.jl~.
+
+* Design
+  This contains two modules:
+  - =Structure.jl=: planetary calculations such as gravity, density, and mass
+    - =planet_cmu=: calculates the complex shear modulus of a planet based on the named models below
+      - *Maxwell*
+      - *Standard Linear Solid*
+      - *Andrade*
+  - =Planets.jl=: struct to initialize a planet with parameters
