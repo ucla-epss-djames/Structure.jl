@@ -105,7 +105,6 @@ function planet_structure(plnt, data::Matrix)
     ω = plnt.ω
     α = plnt.α
     μ_f = plnt.μ_f
-    n = plnt.n
     model = plnt.rhea_model
 
     sd = zeros(Complex, layers, 4)
