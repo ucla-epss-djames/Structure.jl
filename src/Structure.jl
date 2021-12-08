@@ -12,10 +12,11 @@ dmdr(r::Real, ρ::Real) = 4π * ρ * r^2
 dPdr(r::Real, ρ::Real, m::Real) = -G.val * m * ρ / r^2
 
 # Planetary Structure EQNs
+planet_P(ρ::Real, g::Real) = -ρ * g
 planet_m(r::Real, ρ::Real) = 4π * ρ * r^2
 planet_g(r::Real, m::Real) = r == 0 ? 0 : G.val * m / r^2
-
 planet_mmotion(m::Real, a::Real) = sqrt(G.val * m / a^3)
+planet_mu(r::Real, g::Real, ρ::Real) = ρ * g * r
 
 # Rheaology Models
 function cmu_maxwell(μ::Real, ω::Real, η::Real)
@@ -50,7 +51,6 @@ function cmu_andrade(μ::Real, ω::Real, η::Real, α::Real)
 
 end
 
-planet_mu(r::Real, g::Real, ρ::Real) = ρ * g * r
 
 function planet_cmu(μ::Real, ω::Real, η::Real, r::Real, g::Real,
                     ρ::Real, μ_f::Real, α::Real, model::Int)
