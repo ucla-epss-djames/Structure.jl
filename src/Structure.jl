@@ -5,7 +5,7 @@ using PhysicalConstants.CODATA2018: G
 using QuadGK: quadgk
 
 export dmdr, dPdr
-export planet_m, planet_g, planet_mmotion, planet_mu, planet_cmu, planet_structure
+export planet_P, planet_m, planet_g, planet_mmotion, planet_mu, planet_eta, planet_cmu, planet_structure
 
 # Governing Equations
 dmdr(r::Real, ρ::Real) = 4π * ρ * r^2
@@ -17,6 +17,8 @@ planet_m(r::Real, ρ::Real) = 4π * ρ * r^2
 planet_g(r::Real, m::Real) = r == 0 ? 0 : G.val * m / r^2
 planet_mmotion(m::Real, a::Real) = sqrt(G.val * m / a^3)
 planet_mu(r::Real, g::Real, ρ::Real) = ρ * g * r
+
+planet_eta(η0::Real, A::Real, T_m::Real, T::Real) = η0 * exp(A * (T_m/T - 1))
 
 # Rheaology Models
 function cmu_maxwell(μ::Real, ω::Real, η::Real)
