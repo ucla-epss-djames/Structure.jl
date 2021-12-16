@@ -5,14 +5,14 @@ using PhysicalConstants.CODATA2018: G
 using QuadGK: quadgk
 
 export dmdr, dPdr
-export planet_P, planet_m, planet_g, planet_mmotion, planet_mu, planet_eta, planet_cmu, planet_structure
+export planet_m, planet_g, planet_mmotion, planet_mu, planet_eta, planet_cmu, planet_structure
 
 # Governing Equations
 dmdr(r::Real, ρ::Real) = 4π * ρ * r^2
 dPdr(r::Real, ρ::Real, m::Real) = -G.val * m * ρ / r^2
+dPdr(ρ::Real, g::Real) = -ρ * g
 
 # Planetary Structure EQNs
-planet_P(ρ::Real, g::Real) = -ρ * g
 planet_m(r::Real, ρ::Real) = 4π * ρ * r^2
 planet_g(r::Real, m::Real) = r == 0 ? 0 : G.val * m / r^2
 planet_mmotion(m::Real, a::Real) = sqrt(G.val * m / a^3)
