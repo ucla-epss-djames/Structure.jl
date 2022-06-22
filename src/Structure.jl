@@ -55,12 +55,12 @@ end
 
 
 function planet_cmu(μ::Real, ω::Real, η::Real, r::Real, g::Real,
-                    ρ::Real, μ_f::Real, α::Real, model::Int)
+                    ρ::Real, μ_f::Real, model::Int)
 
     if η == 0.0
         # if eta is small, produce small shear
 
-        smu = 1e-4 * planet_mu(r, g, ρ)
+        smu = 1e-5 * planet_mu(r, g, ρ)
         cmu = smu + 0*im
 
     elseif η == -1
@@ -76,7 +76,7 @@ function planet_cmu(μ::Real, ω::Real, η::Real, r::Real, g::Real,
         elseif model == 2
             cmu = cmu_SLS(μ, ω, η, μ_f)
         elseif model == 3
-            cmu = cmu_andrade(μ, ω, η, α)
+            cmu = cmu_andrade(μ, ω, η, μ_f)
         end
 
     end
@@ -95,9 +95,9 @@ end
 function planet_structure(plnt, data::Matrix)
 
     mass = 0.0
+    r0 = 0.0
     layers = plnt.layers
     ω = plnt.ω
-    α = plnt.α
     μ_f = plnt.μ_f
     model = plnt.rhea_model
 
@@ -105,26 +105,20 @@ function planet_structure(plnt, data::Matrix)
 
     for i in 1:layers
 
+        r1 = data[i,1]
         ρ = data[i,2]
         μ = data[i,3]
         η = data[i,4]
 
-        r0 = 0.0
-        r1 = data[i,1]
-
-        if i == 1
-            mass, err = quadgk(x -> planet_m(x, ρ), r0, r1)
-        else
-            r0 = real(sd[i-1,1])
-            res, err = quadgk(x -> planet_m(x, ρ), r0, r1)
-            mass += res
-        end
+        if(i != 1) r0 = real(sd[i-1,1]) end
+        res, err = quadgk(x -> planet_m(x, ρ), r0, r1)
+        mass += res
 
         g = planet_g(r1, mass)
 
         sd[i,4] = ρ
         sd[i,3] = g
-        sd[i,2] = planet_cmu(μ, ω, η, r1, g, ρ, μ_f, α, model)
+        sd[i,2] = planet_cmu(μ, ω, η, r1, g, ρ, μ_f, model)
         sd[i,1] = r1
 
     end
