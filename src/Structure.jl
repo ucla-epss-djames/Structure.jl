@@ -1,7 +1,7 @@
 module Structure
 
 using SpecialFunctions: gamma
-using PhysicalConstants.CODATA2018: G
+using PhysicalConstants.CODATA2014: G
 using QuadGK: quadgk
 
 export dmdr, dPdr
