@@ -115,10 +115,10 @@ function planet_structure(plnt, data::Matrix)
         # res, err = quadgk(x -> planet_m(x, ρ), r0, r1)
         # mass += res
         if i == 1
-            m, err = quadgk(x -> dmdr(x, ρ), 0, r[i])
+            m, err = quadgk(x -> dmdr(x, ρ), 0, data[i,1])
             mass = m
         else
-            m, err = quadgk(x -> dmdr(x, ρ), r[i-1], r[i])
+            m, err = quadgk(x -> dmdr(x, ρ), data[i-1,1], data[i,1])
             mass += m
         end
 
