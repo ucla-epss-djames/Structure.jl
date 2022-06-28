@@ -17,6 +17,7 @@ planet_m(r::Real, ρ::Real) = 4π * ρ * r^2
 planet_g(r::Real, m::Real) = r == 0 ? 0 : G.val * m / r^2
 planet_mmotion(m::Real, a::Real) = sqrt(G.val * m / a^3)
 planet_mu(r::Real, g::Real, ρ::Real) = ρ * g * r
+planet_mu(T::Real, P::Real) = (101 + P*1e-9/2.41 - (T-1650)/23.4) * 1e9
 
 planet_eta(η0::Real, A::Real, T_m::Real, T::Real) = η0 * exp(A * (T_m/T - 1))
 
@@ -110,9 +111,17 @@ function planet_structure(plnt, data::Matrix)
         μ = data[i,3]
         η = data[i,4]
 
-        if(i != 1) r0 = real(sd[i-1,1]) end
-        res, err = quadgk(x -> planet_m(x, ρ), r0, r1)
-        mass += res
+        # if(i != 1) r0 = real(sd[i-1,1]) end
+        # res, err = quadgk(x -> planet_m(x, ρ), r0, r1)
+        # mass += res
+        if i == 1
+            m, err = quadgk(x -> dmdr(x, ρ), 0, r[i])
+            mass = m
+        else
+            m, err = quadgk(x -> dmdr(x, ρ), r[i-1], r[i])
+            mass += m
+        end
+
 
         g = planet_g(r1, mass)
 
