@@ -61,7 +61,7 @@ function planet_cmu(μ::Real, ω::Real, η::Real, r::Real, g::Real,
     if η == 0.0
         # if eta is small, produce small shear
 
-        smu = 1e-5 * planet_mu(r, g, ρ)
+        smu = 1e-4 * planet_mu(r, g, ρ)
         cmu = smu + 0*im
 
     elseif η == -1
@@ -111,17 +111,9 @@ function planet_structure(plnt, data::Matrix)
         μ = data[i,3]
         η = data[i,4]
 
-        # if(i != 1) r0 = real(sd[i-1,1]) end
-        # res, err = quadgk(x -> planet_m(x, ρ), r0, r1)
-        # mass += res
-        if i == 1
-            m, err = quadgk(x -> dmdr(x, ρ), 0, data[i,1])
-            mass = m
-        else
-            m, err = quadgk(x -> dmdr(x, ρ), data[i-1,1], data[i,1])
-            mass += m
-        end
-
+        if(i != 1) r0 = real(sd[i-1,1]) end
+        res, err = quadgk(x -> planet_m(x, ρ), r0, r1)
+        mass += res
 
         g = planet_g(r1, mass)
 
