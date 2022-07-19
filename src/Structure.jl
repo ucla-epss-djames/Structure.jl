@@ -41,9 +41,9 @@ function cmu_SLS(μ0::Real, ω::Real, η::Real, μ_f::Real)
 
 end
 
-function cmu_andrade(μ::Real, ω::Real, η::Real, α::Real)
+function cmu_andrade(μ::Real, ω::Real, η::Real, α::Real; β::Real=0)
 
-    β = μ^(α - 1) * η^-α
+    if(β == 0) β = μ^(α - 1) * η^-α end
 
     J = 1 / μ - im / (η * ω) + β*(ω*im)^-α * gamma(1 + α)
 
