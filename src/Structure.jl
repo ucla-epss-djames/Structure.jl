@@ -3,22 +3,79 @@ module Structure
 using SpecialFunctions: gamma
 
 export dmdr, dPdr
-export planet_m, planet_g, planet_mmotion, planet_mu, planet_eta, planet_cmu, planet_structure
+export planet_m, planet_g, planet_mmotion, planet_mu, planet_cmu
 
-# Governing Equations
+"""
+    dmdr(r::Real, ρ::Real)
+
+Mass in a spherical shell.
+
+# Arguments
+- `r::Real` - radius
+- `ρ::Real` - density
+"""
 dmdr(r::Real, ρ::Real) = 4π * ρ * r^2
+
+"""
+    dPdr(r::Real, ρ::Real, gm::Real)
+
+Pressure due to hydrostatic equilibrium. The gravitational mass is Newton's
+Gravitational constant multiplied by the mass of the body.
+
+# Arguments
+- `r::Real`  - radius
+- `ρ::Real`  - density
+- `gm::Real` - gravitational mass
+"""
 dPdr(r::Real, ρ::Real, gm::Real) = -gm * ρ / r^2
 dPdr(ρ::Real, g::Real) = -ρ * g
 
-# Planetary Structure EQNs
-planet_m(r::Real, ρ::Real) = 4π * ρ * r^2
+"""
+    planet_g(r::Real, gm::Real)
+
+Gravity due to a spherical mass.
+
+# Arguments
+- `r::Real`  - radius
+- `gm::Real` - gravitational mass
+"""
 planet_g(r::Real, gm::Real) = r == 0 ? 0 : gm / r^2
+
+"""
+    planet_mmotion(gm::Real, a::Real)
+
+Mean motion due to a planetary body.
+
+# Arguments
+- `gm::Real` - gravitational mass
+- `a::Real`  - radius of the orbit
+"""
 planet_mmotion(gm::Real, a::Real) = sqrt(gm / a^3)
+
+"""
+    planet_mu(r::Real, g::Real, ρ::Real)
+
+Veritcal stress due to gravity.
+
+# Arguments
+- `r::Real` - radius
+- `g::Real` - gravity
+- `ρ::Real` - density
+"""
 planet_mu(r::Real, g::Real, ρ::Real) = ρ * g * r
-planet_mu(T::Real, P::Real) = (101 + P*1e-9/2.41 - (T-1650)/23.4) * 1e9
 
 
-# Rheaology Models
+"""
+    cmu_maxwell(μ::Real, ω::Real, η::Real)
+
+Maxwell rheaology using the tidal forcing frequency. Refer to Turcotte &
+Schubert 2002 or Storch & Lai 2014 for a decription of this rheaology.
+
+# Arguments
+- `μ::Real` - shear modulus (rigidity)
+- `ω::Real` - rotational frequency
+- `η::Real` - viscosity
+"""
 function cmu_maxwell(μ::Real, ω::Real, η::Real)
 
     ω_m = μ / η
@@ -29,6 +86,18 @@ function cmu_maxwell(μ::Real, ω::Real, η::Real)
 
 end
 
+"""
+    cmu_SLS(μ0::Real, ω::Real, η::Real, μ_f::Real)
+
+Standard Linear Solid model. Refer to Stixrude et al. 2021 or Norwick & Berry
+1972 for a description of this rheaology.
+
+# Arguments
+- `μ0::Real`  - unrelaxed shear modulus
+- `ω::Real`   - rotational frequency
+- `η::Real`   - viscosity
+- `μ_f::Real` - SLS parameter s.t. μ₁/μ₀
+"""
 function cmu_SLS(μ0::Real, ω::Real, η::Real, μ_f::Real)
 
     μ1 = μ0 * μ_f
@@ -41,6 +110,19 @@ function cmu_SLS(μ0::Real, ω::Real, η::Real, μ_f::Real)
 
 end
 
+"""
+    cmu_andrade(μ::Real, ω::Real, η::Real, α::Real; β::Real=0)
+
+Andrade model. Refer to Castillo-Rogez et al. 2011 or Dumoulin et al. 2017 for a
+description of this rheaology.
+
+# Arguments
+- `μ::Real` - shear modulus
+- `ω::Real` - rotational frequency
+- `η::Real` - viscosity
+- `α::Real` - frequency dependence (Andrade exponent)
+- `β::Real` - amplitude of the transient response
+"""
 function cmu_andrade(μ::Real, ω::Real, η::Real, α::Real; β::Real=0)
 
     if(β == 0) β = μ^(α - 1) * η^-α end
@@ -51,9 +133,28 @@ function cmu_andrade(μ::Real, ω::Real, η::Real, α::Real; β::Real=0)
 
 end
 
+"""
+    planet_cmu(μ::Real, ω::Real, η::Real, r::Real, g::Real, ρ::Real,
+               μ_f::Real, model::Int)
 
-function planet_cmu(μ::Real, ω::Real, η::Real, r::Real, g::Real,
-                    ρ::Real, μ_f::Real, model::Int)
+Calculates the complex shear modulus (CMU) based on model input desire.
+Viscosity will determine if the CMU model is used or if the infinite limit is
+used. If viscosity is 0.0, a small shear modulus is produced for stability.
+Refer to `cmu_maxwell`, `cmu_SLS`, or `cmu_andrade` for infromation on the
+models.
+
+# Arguments
+- `μ::Real`    - shear modulus
+- `ω::Real`    - rotational frequency
+- `η::Real`    - viscosity
+- `r::Real`    - radius
+- `g::Real`    - gravity
+- `ρ::Real`    - density
+- `μ_f::Real`  - SLS parameter μ₁/μ₀
+- `model::Int` - model desire ([1] Maxwell, [2] SLS, [3] Andrade)
+"""
+function planet_cmu(μ::Real, ω::Real, η::Real, r::Real, g::Real, ρ::Real,
+                    μ_f::Real, model::Int)
 
     if η == 0.0
         # if eta is small, produce small shear
