@@ -150,7 +150,7 @@ models.
 - `r::Real`    - radius
 - `g::Real`    - gravity
 - `ρ::Real`    - density
-- `μ_f::Real`  - SLS parameter μ₁/μ₀
+- `μ_f::Tuple` - rheaology parameters ([1] SLS factor, [2,3] Andrade alpha, beta)
 - `model::Int` - model desire ([1] Maxwell, [2] SLS, [3] Andrade)
 """
 function planet_cmu(μ::Real, ω::Real, η::Real, r::Real, g::Real, ρ::Real,
