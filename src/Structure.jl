@@ -154,7 +154,7 @@ models.
 - `model::Int` - model desire ([1] Maxwell, [2] SLS, [3] Andrade)
 """
 function planet_cmu(μ::Real, ω::Real, η::Real, r::Real, g::Real, ρ::Real,
-                    μ_f::Real, model::Int)
+                    μ_f::Tuple, model::Int)
 
     if η == 0.0
         # if eta is small, produce small shear
@@ -173,9 +173,9 @@ function planet_cmu(μ::Real, ω::Real, η::Real, r::Real, g::Real, ρ::Real,
         if model == 1
             cmu = cmu_maxwell(μ, ω, η)
         elseif model == 2
-            cmu = cmu_SLS(μ, ω, η, μ_f)
+            cmu = cmu_SLS(μ, ω, η, μ_f[1])
         elseif model == 3
-            cmu = cmu_andrade(μ, ω, η, μ_f)
+            cmu = cmu_andrade(μ, ω, η, μ_f[2], β=μ_f[3])
         end
 
     end
