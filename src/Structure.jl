@@ -50,7 +50,7 @@ Mean motion due to a planetary body.
 - `gm::Real` - gravitational mass
 - `a::Real`  - radius of the orbit
 """
-planet_mmotion(gm::Real, a::Real) = sqrt(gm / a^3)
+planet_mmotion(gm::Real, a::Real) = gm == 0 ? 0 : sqrt(gm / a^3)
 
 """
     planet_mu(r::Real, g::Real, ρ::Real)
