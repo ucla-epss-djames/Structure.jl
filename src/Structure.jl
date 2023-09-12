@@ -47,7 +47,7 @@ planet_g(r::Real, gm::Real) = r == 0 ? 0 : gm / r^2
 Mean motion due to a planetary body.
 
 # Arguments
-- `gm::Real` - gravitational mass
+- `gm::Real` - gravitational mass of planet
 - `a::Real`  - radius of the orbit
 """
 planet_mmotion(gm::Real, a::Real) = gm == 0 ? 0 : sqrt(gm / a^3)
